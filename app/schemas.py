@@ -8,16 +8,15 @@ from typing import Optional, List, Literal
 class UserBase(BaseModel):
     name: str
     email: str
-    type: str
 
 class UserCreate(UserBase): # What happens if I specify a field here?
-    pass
+    password: str
 
-class UserUpdate(UserBase):
+class UserUpdate(BaseModel):
     name: Optional[str]
     email: Optional[str]
 
-class User(UserBase):
+class User(UserBase): # how can i do calculations? for example, "time since user was added?"
     id:int
     created_at: datetime.datetime
     updated_at: datetime.datetime
@@ -30,7 +29,9 @@ class User(UserBase):
 class StudentCreate(UserCreate):
     pass
 
-class StudentUpdate(UserUpdate):
+class StudentUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
     tutor_id: Optional[int] = None
 
 class Student(User):
@@ -45,12 +46,11 @@ class Student(User):
 class TutorCreate(UserCreate):
     pass
 
-class TutorUpdate(UserUpdate):
+class TutorUpdate(BaseModel):
     pass
 
 class Tutor(User):
     type: Literal["tutor"] = "tutor"  # Ensure type is always "tutor"
-    students: Optional[List[Student]] = []
 
     class Config:
         from_attributes = True
