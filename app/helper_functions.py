@@ -28,3 +28,11 @@ def validate_email_unique(session: sa.orm.Session, email: str):
     if session.scalars(statement).first() is None:
         return True
     return False
+
+def hash_password(password: str): # What return type should the hash be? What lib do i use
+    # ...
+    return password
+    
+def validate_password(session: sa.orm.Session, password: str):
+    # ...
+    return True

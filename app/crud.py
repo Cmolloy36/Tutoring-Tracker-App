@@ -31,14 +31,15 @@ def post_student(session: Session, student: schemas.StudentCreate) -> tuple[mode
     student = models.Student(
         name=student.name,
         email=student.email,
-        type="student"
+        type="student",
+        password_hash=hash_password(student.password)
     )
     session.add(student)
     session.commit()
     session.refresh(student)
     return student, None
 
-def get_student(session: Session, student_id : int):
+def get_student(session: Session, student_id: int):
     statement = sa.select(models.Student).where(models.Student.id==student_id)
     return session.scalars(statement).first()
 
@@ -70,7 +71,8 @@ def post_tutor(session: Session, tutor: schemas.TutorCreate) -> tuple[models.Tut
     tutor = models.Tutor(
         name=tutor.name,
         email=tutor.email,
-        type="tutor"
+        type="tutor",
+        password_hash=hash_password(tutor.password)
     )
     session.add(tutor)
     session.commit()

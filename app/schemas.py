@@ -9,7 +9,7 @@ class UserBase(BaseModel):
     name: str
     email: str
 
-class UserCreate(UserBase): # What happens if I specify a field here?
+class UserCreate(UserBase):
     password: str
 
 class UserUpdate(BaseModel):
@@ -47,7 +47,8 @@ class TutorCreate(UserCreate):
     pass
 
 class TutorUpdate(BaseModel):
-    pass
+    name: Optional[str] = None
+    email: Optional[str] = None
 
 class Tutor(User):
     type: Literal["tutor"] = "tutor"  # Ensure type is always "tutor"

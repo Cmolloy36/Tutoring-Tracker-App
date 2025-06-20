@@ -29,11 +29,11 @@ class Student(User):
     __tablename__ = "students"
 
     id: Mapped[int] = mapped_column(sa.ForeignKey("users.id"), primary_key=True)
-    tutor_id: Mapped[Optional[int]] = mapped_column(sa.ForeignKey("users.id"), nullable=True)
+    tutor_id: Mapped[Optional[int]] = mapped_column(nullable=True)
     parent_name: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
 
-    # Relationship to access the tutor object
-    tutor = relationship("Tutor", back_populates="students")
+    # # Relationship to access the tutor object
+    # tutor = relationship("Tutor", back_populates="students")
 
     __mapper_args__ = {
         "polymorphic_identity": "student",
@@ -48,7 +48,7 @@ class Tutor(User):
 
     id: Mapped[int] = mapped_column(sa.ForeignKey("users.id"), primary_key=True)
     # favorite_color: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
-    students = relationship("Student", back_populates="tutor")
+    # students = relationship("Student", back_populates="tutor")
 
     __mapper_args__ = {
         "polymorphic_identity": "tutor",
