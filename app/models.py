@@ -6,7 +6,7 @@ from typing import List, Optional
 class Base(sa.orm.DeclarativeBase):
     pass
 
-class User(Base):
+class User(Base): # TODO: add delete cascade for students and tutors tables (if not automatic)
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -5,16 +5,17 @@ from contextlib import asynccontextmanager
 from . import crud, models, schemas
 from .database import *
 
-app = FastAPI()
-
-models.Base.metadata.create_all(engine)
-
 # Initialization
 
+#define means to add dummy initial data here
 @asynccontextmanager
-def add_base_data(session: Session = Depends(get_session)):
-    pass #define means to add dummy initial data here
+def lifespan(session: Session = Depends(get_session)):
+    pass 
 
+app = FastAPI()
+# app = FastAPI(lifespan=lifespan)
+
+models.Base.metadata.create_all(engine)
 
 # Users
 
@@ -67,8 +68,8 @@ def get_students(skip: int = 0, limit: int = 10, session: Session = Depends(get_
 @app.put("/students/{student_id}", response_model=schemas.Student)
 def update_student(student_id: int, student_data: schemas.StudentUpdate, session: Session = Depends(get_session)):
     student, err = crud.update_student(session=session, student_id=student_id, student_data=student_data)
-    if student is None:
-        raise HTTPException(status_code=404, detail=f"a student with this id does not exist")
+    if err is not None:
+        raise HTTPException(status_code=404, detail=f"error: {err}")
     return student
 
 # Consider a delete endpoint at students as well
@@ -78,7 +79,7 @@ def update_student(student_id: int, student_data: schemas.StudentUpdate, session
 @app.post("/tutors",response_model=schemas.Tutor)
 def post_tutor(tutor: schemas.TutorCreate, session: Session = Depends(get_session)):
     tutor, err = crud.post_tutor(session=session, tutor=tutor)
-    if err is not None:
+    if err is not None: 
         raise HTTPException(status_code=404, detail=f"unable to add tutor: {err}")
     return tutor
 

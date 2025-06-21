@@ -16,10 +16,15 @@ class UserUpdate(BaseModel):
     name: Optional[str]
     email: Optional[str]
 
+class UserPasswordUpdate(BaseModel):
+    password: str
+    new_password: str
+
 class User(UserBase): # how can i do calculations? for example, "time since user was added?"
-    id:int
+    id: int
     created_at: datetime.datetime
     updated_at: datetime.datetime
+    type: str
 
     class Config:
         from_attributes = True
@@ -35,8 +40,8 @@ class StudentUpdate(BaseModel):
     tutor_id: Optional[int] = None
 
 class Student(User):
-    type: Literal["student"] = "student"  # Ensure type is always "student"
-    tutor_id: Optional[int] = None  # Make this optional to match the model
+    # type: Literal["student"] = "student"  # Ensure type is always "student"
+    tutor_id: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -51,7 +56,7 @@ class TutorUpdate(BaseModel):
     email: Optional[str] = None
 
 class Tutor(User):
-    type: Literal["tutor"] = "tutor"  # Ensure type is always "tutor"
+    # type: Literal["tutor"] = "tutor"  # Ensure type is always "tutor"
 
     class Config:
         from_attributes = True
