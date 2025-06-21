@@ -90,6 +90,13 @@ def get_tutor(tutor_id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail=f"a tutor with this id does not exist")
     return tutor
 
+@app.get("/tutors/{tutor_id}/students", response_model=list[schemas.Student])
+def get_students_of_tutor(tutor_id: int, session: Session = Depends(get_session)):
+    students = crud.get_students_of_tutor(session=session, tutor_id=tutor_id)
+    # if students is None:
+    #     raise HTTPException(status_code=404, detail=f"a tutor with this id does not exist")
+    return students
+
 @app.get("/tutors", response_model=list[schemas.Tutor])
 def get_tutors(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
     tutors = crud.get_tutors(session=session, skip=skip, limit=limit)
@@ -100,7 +107,7 @@ def get_tutors(skip: int = 0, limit: int = 10, session: Session = Depends(get_se
 @app.put("/tutors/{tutor_id}", response_model=schemas.Tutor)
 def update_tutor(tutor_id: int, tutor_data: schemas.TutorUpdate, session: Session = Depends(get_session)):
     tutor, err = crud.update_tutor(session=session, tutor_id=tutor_id, tutor_data=tutor_data)
-    if tutor is None:
+    if err is not None:
         raise HTTPException(status_code=404, detail=f"a tutor with this id does not exist")
     return tutor
 

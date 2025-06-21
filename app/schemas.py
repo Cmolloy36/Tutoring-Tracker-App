@@ -3,6 +3,8 @@ import sqlalchemy as sa
 from pydantic import BaseModel
 from typing import Optional, List, Literal
 
+## I can define whatever models I want derived from the BaseModel to provide different fields for different endpoints
+
 # Users
 
 class UserBase(BaseModel):
