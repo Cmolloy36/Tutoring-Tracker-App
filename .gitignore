@@ -1,3 +1,5 @@
 .venv
 *.db
 *.http
+env.py
+alembic.ini
