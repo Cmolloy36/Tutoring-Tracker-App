@@ -20,6 +20,7 @@ class User(Base): # TODO: add delete cascade for students and tutors tables (if 
     __mapper_args__ = {
         "polymorphic_identity": "user",
         "polymorphic_on": "type",
+        "with_polymorphic": "*",
     }
 
     def __repr__(self):
@@ -37,11 +38,11 @@ class Student(User):
     #     single_parent=True  # Ensures a test can belong to only one student
     # )
 
-    id: Mapped[int] = mapped_column(sa.ForeignKey("users.id"), primary_key=True)
+    id = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     tutor_id: Mapped[Optional[int]] = mapped_column(nullable=True)
     parent_name: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
-    parent_email: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
-    completed_exit_survey: Mapped[bool] = mapped_column(sa.Boolean)
+    # parent_email: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
+    # completed_exit_survey: Mapped[bool] = mapped_column(sa.Boolean,default=False)
 
     __mapper_args__ = {
         "polymorphic_identity": "student",
@@ -64,12 +65,13 @@ class Tutor(User):
     # )
 
 
-    id: Mapped[int] = mapped_column(sa.ForeignKey("users.id"), primary_key=True)
+    id = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     # favorite_color: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
     # students = relationship("Student", back_populates="tutor")
 
     __mapper_args__ = {
         "polymorphic_identity": "tutor",
+        "inherit_condition": id == User.id,
     }
 
     # def __repr__(self):

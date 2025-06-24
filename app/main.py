@@ -35,10 +35,10 @@ def get_users(skip: int = 0, limit: int = 10, session: Session = Depends(get_ses
 
 @app.delete("/users/{user_id}", response_model=str)
 def delete_user(user_id: int, session: Session = Depends(get_session)):
-    user_name = crud.delete_user(session=session, user_id=user_id)
-    if user_name is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user_name
+    user_name, user_id, err = crud.delete_user(session=session, user_id=user_id)
+    if err is not None:
+        raise HTTPException(status_code=404, detail=f"error: {err}")
+    return f"{user_name} (user_id: {user_id}) has been deleted"
 
 # Students
 

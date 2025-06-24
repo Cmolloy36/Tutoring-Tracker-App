@@ -1,5 +1,5 @@
 .venv
 *.db
 *.http
-env.py
+.env
 alembic.ini

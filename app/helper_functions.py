@@ -3,7 +3,15 @@ import sqlalchemy as sa
 
 from . import models
 
+def validate_email(session: sa.orm.Session, email: str):
+    err = None
+    if not validate_email_regex(email):
+        err = "invalid email format"
 
+    if not validate_email_unique(session, email):
+        err = "a user with this email already exists"
+
+    return err
 
 def validate_email(session: sa.orm.Session, email: str):
     err = None
@@ -38,28 +46,40 @@ def validate_password(session: sa.orm.Session, password: str):
     # ...
     return True
 
-def validate_student(session: sa.orm.Session, student_id: int):
+# consider making these into one function with passable type input
+def validate_is_student(session: sa.orm.Session, user_id: int):
     err = None
-    if not validate_student_exists(session=session, student_id=student_id):
-        err = "Student does not exist"
+    user = session.query(models.User).filter_by(id=user_id).first()
+    print(user)
+    if user is None:
+        err = f"User with user_id: {user_id} does not exist"
+    elif user.type != "student":
+        err = f"User {user_id} is not student (type {user.type})"
 
     return err
 
-def validate_student_exists(session: sa.orm.Session, student_id: int):
-    statement = sa.select(models.Student).where(models.Student.id==student_id)
-    if session.scalars(statement).first() is not None:
-        return True
-    return False
-
-def validate_tutor(session: sa.orm.Session, tutor_id: int):
+def validate_is_tutor(session: sa.orm.Session, user_id: int):
     err = None
-    if not validate_tutor_exists(session=session, tutor_id=tutor_id):
-        err = "Tutor does not exist"
+    user = session.query(models.User).filter_by(id=user_id).first()
+    print(user)
+    if user is None:
+        err = f"User with user_id: {user_id} does not exist"
+    if user.type != "tutor":
+        err = f"User {user_id} is not tutor (type {user.type})"
 
     return err
 
-def validate_tutor_exists(session: sa.orm.Session, tutor_id: int):
-    statement = sa.select(models.Tutor).where(models.Tutor.id==tutor_id)
-    if session.scalars(statement).first() is not None:
-        return True
-    return False
+def validate_is_user(session: sa.orm.Session, user_id: int):
+    err = None
+    user = session.query(models.User).filter_by(id=user_id).first()
+    if user is None:
+        err = f"User {user_id} does not exist"
+    return err
+
+# def validate_user_type(session: sa.orm.Session, user_id: int, user_type: str):
+#     err = None
+#     user = session.query(models.User).filter_by(id=user_id).first()
+#     if user.type is not user_type:
+#         err = f"User {user_id} is type {user.type}, not {user_type}"
+
+#     return err
