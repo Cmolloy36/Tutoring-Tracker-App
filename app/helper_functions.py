@@ -3,6 +3,13 @@ import sqlalchemy as sa
 
 from . import models
 
+global student_type, tutor_type, sat_type, psat_type, act_type
+student_type = "student"
+tutor_type = "tutor"
+sat_type = "SAT"
+psat_type = "PSAT"
+act_type = "ACT"
+
 def validate_email(session: sa.orm.Session, email: str):
     err = None
     if not validate_email_regex(email):
@@ -50,22 +57,20 @@ def validate_password(session: sa.orm.Session, password: str):
 def validate_is_student(session: sa.orm.Session, user_id: int):
     err = None
     user = session.query(models.User).filter_by(id=user_id).first()
-    print(user)
     if user is None:
         err = f"User with user_id: {user_id} does not exist"
-    elif user.type != "student":
-        err = f"User {user_id} is not student (type {user.type})"
+    elif user.type != student_type:
+        err = f"User {user_id} is not {student_type} (type {user.type})"
 
     return err
 
 def validate_is_tutor(session: sa.orm.Session, user_id: int):
     err = None
     user = session.query(models.User).filter_by(id=user_id).first()
-    print(user)
     if user is None:
         err = f"User with user_id: {user_id} does not exist"
-    if user.type != "tutor":
-        err = f"User {user_id} is not tutor (type {user.type})"
+    if user.type != tutor_type:
+        err = f"User {user_id} is not {tutor_type} (type {user.type})"
 
     return err
 
@@ -76,10 +81,41 @@ def validate_is_user(session: sa.orm.Session, user_id: int):
         err = f"User {user_id} does not exist"
     return err
 
-# def validate_user_type(session: sa.orm.Session, user_id: int, user_type: str):
-#     err = None
-#     user = session.query(models.User).filter_by(id=user_id).first()
-#     if user.type is not user_type:
-#         err = f"User {user_id} is type {user.type}, not {user_type}"
+# TODO: Consolidate these into one function
 
-#     return err
+def validate_is_test(session: sa.orm.Session, test_id: int):
+    err = None
+    test = session.query(models.Test).filter_by(id=test_id).first()
+    if test is None:
+        err = f"Test {test_id} does not exist"
+    return err
+
+def validate_is_sat(session: sa.orm.Session, test_id: int):
+    err = None
+    test = session.query(models.Test).filter_by(id=test_id).first()
+    if test is None:
+        err = f"Test with test_id: {test_id} does not exist"
+    elif test.type != sat_type:
+        err = f"Test {test_id} is not {sat_type} (type {test.type})"
+
+    return err
+
+def validate_is_psat(session: sa.orm.Session, test_id: int):
+    err = None
+    test = session.query(models.Test).filter_by(id=test_id).first()
+    if test is None:
+        err = f"Test with test_id: {test_id} does not exist"
+    elif test.type != sat_type:
+        err = f"Test {test_id} is not {psat_type} (type {test.type})"
+
+    return err
+
+def validate_is_act(session: sa.orm.Session, test_id: int):
+    err = None
+    test = session.query(models.Test).filter_by(id=test_id).first()
+    if test is None:
+        err = f"Test with test_id: {test_id} does not exist"
+    elif test.type != sat_type:
+        err = f"Test {test_id} is not {act_type} (type {test.type})"
+
+    return err

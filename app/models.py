@@ -6,7 +6,7 @@ from typing import List, Optional
 class Base(sa.orm.DeclarativeBase):
     pass
 
-class User(Base): # TODO: add delete cascade for students and tutors tables (if not automatic)
+class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -28,15 +28,6 @@ class User(Base): # TODO: add delete cascade for students and tutors tables (if 
 
 class Student(User):
     __tablename__ = "students"
-
-    # check below relationship is necessary
-
-    # tests = relationship(
-    #     "Test",
-    #     backref="students",
-    #     cascade="all, delete-orphan",
-    #     single_parent=True  # Ensures a test can belong to only one student
-    # )
 
     id = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     tutor_id: Mapped[Optional[int]] = mapped_column(nullable=True)
@@ -86,14 +77,73 @@ class Test(Base):
     created_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
     updated_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
     type: Mapped[str] = mapped_column(nullable=False)
+    test_notes: Mapped[str] = mapped_column(nullable=False)
+    fk_students: Mapped[int] = mapped_column(sa.ForeignKey(Student.id))
 
     __mapper_args__ = {
         "polymorphic_identity": "test",
         "polymorphic_on": "type",
+        "with_polymorphic": "*",
     }
 
     def __repr__(self):
         return f"{self.__class__.__name__}(id={self.id}, name={self.name}, email={self.email}, type={self.type})"
+    
+class SAT(Test):
+    __tablename__ = "SATs"
+
+    id = mapped_column(sa.ForeignKey("tests.id", ondelete="CASCADE"), primary_key=True)
+    english_score: Mapped[int] = mapped_column(nullable=False)
+    math_score: Mapped[int] = mapped_column(nullable=False)
+    
+    __mapper_args__ = {
+        "polymorphic_identity": "SAT",
+        "inherit_condition": id == Test.id,
+    }
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}(id={self.id}, score={self.english_score + self.math_score}," 
+            f"english_score={self.english_score}, math_score={self.math_score})"
+        )
+    
+class PSAT(Test):
+    __tablename__ = "PSATs"
+
+    id = mapped_column(sa.ForeignKey("tests.id", ondelete="CASCADE"), primary_key=True)
+    english_score: Mapped[int] = mapped_column(nullable=False)
+    math_score: Mapped[int] = mapped_column(nullable=False)
+
+    __mapper_args__ = {
+        "polymorphic_identity": "PSAT",
+        "inherit_condition": id == Test.id,
+    }
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}(id={self.id}, score={self.english_score + self.math_score}," 
+            f"english_score={self.english_score}, math_score={self.math_score})"
+        )
+    
+class ACT(Test):
+    __tablename__ = "ACTs"
+
+    id = mapped_column(sa.ForeignKey("tests.id", ondelete="CASCADE"), primary_key=True)
+    english_score: Mapped[int] = mapped_column(nullable=False)
+    math_score: Mapped[int] = mapped_column(nullable=False)
+    reading_score: Mapped[int] = mapped_column(nullable=False)
+    science_score: Mapped[int] = mapped_column(nullable=False)
+
+    __mapper_args__ = {
+        "polymorphic_identity": "ACT",
+        "inherit_condition": id == Test.id,
+    }
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}(id={self.id}, score={(self.english_score + self.math_score + self.reading_score + self.science_score) / 4},"
+            f"english_score={self.english_score}, math_score={self.math_score})"
+        )
 
 
 class TutoringSession(Base):
