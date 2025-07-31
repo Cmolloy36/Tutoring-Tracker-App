@@ -30,8 +30,11 @@ class Student(User):
     __tablename__ = "students"
 
     id = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
-    tutor_id: Mapped[Optional[int]] = mapped_column(nullable=True)
+    # tutor_id: Mapped[Optional[int]] = mapped_column(nullable=True)
     parent_name: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
+    tutor: Mapped["Tutor"] = relationship(back_populates="students")
+    tests: Mapped[list["Test"]] = relationship(back_populates="student")
+    tutoring_sessions: Mapped[list["TutoringSession"]] = relationship(back_populates="student")
     # parent_email: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
     # completed_exit_survey: Mapped[bool] = mapped_column(sa.Boolean,default=False)
 
@@ -46,19 +49,10 @@ class Student(User):
 class Tutor(User):
     __tablename__ = "tutors"
 
-    # check below relationship is necessary
-    
-    # tests = relationship(
-    #     "Test",
-    #     backref="tutors",
-    #     cascade="all, delete-orphan",
-    #     single_parent=True  # Ensures a test can belong to only one student
-    # )
-
-
     id = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     # favorite_color: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
-    # students = relationship("Student", back_populates="tutor")
+    students: Mapped[list["Student"]] = relationship(back_populates="tutor")
+    tutoring_sessions: Mapped[list["TutoringSession"]] = relationship(back_populates="tutor")
 
     __mapper_args__ = {
         "polymorphic_identity": "tutor",
@@ -78,7 +72,7 @@ class Test(Base):
     updated_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
     type: Mapped[str] = mapped_column(nullable=False)
     test_notes: Mapped[str] = mapped_column(nullable=False)
-    fk_students: Mapped[int] = mapped_column(sa.ForeignKey(Student.id))
+    student: Mapped["Student"] = relationship(back_populates="tests")
 
     __mapper_args__ = {
         "polymorphic_identity": "test",
@@ -149,19 +143,17 @@ class ACT(Test):
 class TutoringSession(Base):
     __tablename__ = 'sessions'
 
-    # This creates an __init__ method with each param as an optional input
     id: Mapped[int] = mapped_column(sa.Sequence('id_seq'), primary_key=True)
     created_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
     updated_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
-    date_completed = sa.Column(sa.TIMESTAMP,nullable=True) # how to input the date? -can be done in pydantic model
+    date_completed = sa.Column(sa.TIMESTAMP,nullable=True)
     payment_amount: Mapped[Optional[int]] = mapped_column(nullable=True)
     session_notes: Mapped[str] = mapped_column(nullable=True)
-    fk_students: Mapped[int] = mapped_column(sa.ForeignKey(Student.id)) # can i use 2 fks to the users table now? are fks even appropriate?
-    fk_tutors: Mapped[int] = mapped_column(sa.ForeignKey(Tutor.id))
-    fk_tests: Mapped[int] = mapped_column(sa.ForeignKey(Test.id), nullable=True)
+    student: Mapped["Student"] = relationship(back_populates="tutoring_sessions")
+    tutor: Mapped["Tutor"] = relationship(back_populates="tutoring_sessions")
 
     def __repr__(self) -> str:
         return (
-    f"{self.__class__.__name__}(id={self.id!r}, student_id={self.fk_students!r}, "
+    f"{self.__class__.__name__}(id={self.id!r},"
     f"created_at={self.created_at}, updated_at={self.updated_at}, "
     f"session_notes={self.session_notes}")

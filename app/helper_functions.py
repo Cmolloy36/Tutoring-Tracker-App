@@ -20,16 +20,6 @@ def validate_email(session: sa.orm.Session, email: str):
 
     return err
 
-def validate_email(session: sa.orm.Session, email: str):
-    err = None
-    if not validate_email_regex(email):
-        err = "invalid email format"
-
-    if not validate_email_unique(session, email):
-        err = "a user with this email already exists"
-
-    return err
-
 def validate_email_regex(email):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 

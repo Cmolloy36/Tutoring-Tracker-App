@@ -2,4 +2,7 @@
 *.db
 *.http
 .env
+password.txt
+
+# Can include alembic.ini if I use environment variables for the db string
 alembic.ini
