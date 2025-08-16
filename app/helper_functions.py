@@ -109,3 +109,13 @@ def validate_is_act(session: sa.orm.Session, test_id: int):
         err = f"Test {test_id} is not {act_type} (type {test.type})"
 
     return err
+
+
+# Tutoring sessions
+
+def validate_is_tutoring_session(session: sa.orm.Session, tutoring_session_id: int):
+    err = None
+    tutoring_session = session.query(models.TutoringSession).filter_by(id=tutoring_session_id).first()
+    if tutoring_session is None:
+        err = f"Tutoring_session {tutoring_session_id} does not exist"
+    return err

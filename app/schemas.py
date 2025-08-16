@@ -1,7 +1,7 @@
 import datetime
 import sqlalchemy as sa
 from pydantic import BaseModel
-from typing import Optional, List, Literal
+from typing import Optional
 
 ## I can define whatever models I want derived from the BaseModel to provide different fields for different endpoints
 
@@ -37,13 +37,12 @@ class StudentCreate(UserCreate):
     pass
 
 class StudentUpdate(BaseModel):
-    name: Optional[str] = None
-    email: Optional[str] = None
-    tutor_id: Optional[int] = None
+    name: Optional[str]
+    email: Optional[str]
+    tutor_id: Optional[int]
 
 class Student(User):
-    # type: Literal["student"] = "student"  # Ensure type is always "student"
-    tutor_id: Optional[int] = None
+    tutor_id: int
 
     class Config:
         from_attributes = True
@@ -54,11 +53,11 @@ class TutorCreate(UserCreate):
     pass
 
 class TutorUpdate(BaseModel):
-    name: Optional[str] = None
-    email: Optional[str] = None
+    name: Optional[str]
+    email: Optional[str]
 
 class Tutor(User):
-    # TODO: Return students associated with tutor
+    student_ids: list[int]
 
     class Config:
         from_attributes = True
@@ -75,10 +74,10 @@ class TestCreate(TestBase):
     pass
 
 class TestUpdate(BaseModel):
-    name: Optional[str] = None
-    date_completed: Optional[datetime.date] = None
-    test_notes: Optional[str] = None
-    student_id: Optional[int] = None
+    name: Optional[str]
+    date_completed: Optional[datetime.date]
+    test_notes: Optional[str]
+    student_id: Optional[int]
     
 class Test(TestBase):
     id: int
@@ -86,7 +85,7 @@ class Test(TestBase):
     updated_at: datetime.datetime
     type: str
     student_id: int
-    # student_name: str # get student method from id
+    student_name: str
     test_notes: str
     #consider adding a get_score() method to get score of any test
 
@@ -100,12 +99,12 @@ class SATCreate(TestCreate):
     math_score: int
 
 class SATUpdate(BaseModel):
-    name: Optional[str] = None
-    date_completed: Optional[datetime.date] = None
-    test_notes: Optional[str] = None
-    student_id: Optional[int] = None
-    english_score: Optional[int] = None
-    math_score: Optional[int] = None
+    name: Optional[str]
+    date_completed: Optional[datetime.date]
+    test_notes: Optional[str]
+    student_id: Optional[int]
+    english_score: Optional[int]
+    math_score: Optional[int]
     
 class SAT(Test):
     total_score: int
@@ -122,12 +121,12 @@ class PSATCreate(TestCreate):
     math_score: int
 
 class PSATUpdate(BaseModel):
-    name: Optional[str] = None
-    date_completed: Optional[datetime.date] = None
-    test_notes: Optional[str] = None
-    student_id: Optional[int] = None
-    english_score: Optional[int] = None
-    math_score: Optional[int] = None
+    name: Optional[str]
+    date_completed: Optional[datetime.date]
+    test_notes: Optional[str]
+    student_id: Optional[int]
+    english_score: Optional[int]
+    math_score: Optional[int]
     
 class PSAT(Test):
     total_score: int
@@ -146,14 +145,14 @@ class ACTCreate(TestCreate):
     science_score: int
 
 class ACTUpdate(BaseModel):
-    name: Optional[str] = None
-    date_completed: Optional[datetime.date] = None
-    test_notes: Optional[str] = None
-    student_id: Optional[int] = None
-    english_score: Optional[int] = None
-    math_score: Optional[int] = None
-    reading_score: Optional[int] = None
-    science_score: Optional[int] = None
+    name: Optional[str]
+    date_completed: Optional[datetime.date]
+    test_notes: Optional[str]
+    student_id: Optional[int]
+    english_score: Optional[int]
+    math_score: Optional[int]
+    reading_score: Optional[int]
+    science_score: Optional[int]
     
 class ACT(Test):
     total_score: int
@@ -161,6 +160,38 @@ class ACT(Test):
     math_score: int
     reading_score: int
     science_score: int
+
+    class Config:
+        from_attributes = True
+
+# Tutoring Sessions
+
+class TutoringSessionBase(BaseModel):
+    date_completed: Optional[datetime.date]
+    payment_amount: Optional[int]
+    session_notes: str
+    student_id: int
+    tutor_id: int
+    test_id: int
+
+class TutoringSessionCreate(TutoringSessionBase):
+    pass
+
+class TutoringSessionUpdate(BaseModel):
+    date_completed: Optional[datetime.date]
+    payment_amount: Optional[int]
+    session_notes: Optional[str]
+    student_id: Optional[int]
+    tutor_id: Optional[int]
+    test_id: int
+
+class TutoringSession(BaseModel):
+    date_completed: datetime.date
+    payment_amount: int
+    session_notes: str
+    student_id: int # Include name?
+    tutor_id: int # Include name?
+    test_id: int
 
     class Config:
         from_attributes = True

@@ -32,7 +32,7 @@ class Student(User):
     id = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     # tutor_id: Mapped[Optional[int]] = mapped_column(nullable=True)
     parent_name: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
-    tutor: Mapped["Tutor"] = relationship(back_populates="students")
+    tutor_id: Mapped[int] = mapped_column(sa.ForeignKey("tutors.id"))
     tests: Mapped[list["Test"]] = relationship(back_populates="student")
     tutoring_sessions: Mapped[list["TutoringSession"]] = relationship(back_populates="student")
     # parent_email: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
@@ -72,7 +72,9 @@ class Test(Base):
     updated_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
     type: Mapped[str] = mapped_column(nullable=False)
     test_notes: Mapped[str] = mapped_column(nullable=False)
+    student_id: Mapped[int] = mapped_column(sa.ForeignKey("students.id"))
     student: Mapped["Student"] = relationship(back_populates="tests")
+    tutoring_sessions: Mapped[list["TutoringSession"]] = relationship(back_populates="test")
 
     __mapper_args__ = {
         "polymorphic_identity": "test",
@@ -141,16 +143,20 @@ class ACT(Test):
 
 
 class TutoringSession(Base):
-    __tablename__ = 'sessions'
+    __tablename__ = 'tutoring_sessions'
 
     id: Mapped[int] = mapped_column(sa.Sequence('id_seq'), primary_key=True)
     created_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
     updated_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
-    date_completed = sa.Column(sa.TIMESTAMP,nullable=True)
-    payment_amount: Mapped[Optional[int]] = mapped_column(nullable=True)
+    date_completed: Mapped[datetime] = mapped_column(sa.TIMESTAMP,nullable=True)
+    payment_amount: Mapped[int] = mapped_column(nullable=True,default=60)
     session_notes: Mapped[str] = mapped_column(nullable=True)
+    student_id: Mapped[int] = mapped_column(sa.ForeignKey("students.id"))
     student: Mapped["Student"] = relationship(back_populates="tutoring_sessions")
+    tutor_id: Mapped[int] = mapped_column(sa.ForeignKey("tutors.id"))
     tutor: Mapped["Tutor"] = relationship(back_populates="tutoring_sessions")
+    test_id: Mapped[int] = mapped_column(sa.ForeignKey("tests.id"))
+    tutor: Mapped["Test"] = relationship(back_populates="tutoring_sessions")
 
     def __repr__(self) -> str:
         return (
