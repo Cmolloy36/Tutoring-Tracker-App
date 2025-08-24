@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from .. import crud_tests, schemas
 from ..database import *
+from ..helper_classes import TestType
 
 
 # User-related endpoints
@@ -11,36 +13,62 @@ router = APIRouter()
 
 # Tests
 
-@router.get("/tests/{test_id}", response_model=schemas.Test)
-def get_test(test_id: int, session: Session = Depends(get_session)):
-    test = crud_tests.get_test(session=session, test_id=test_id)
-    if test is None:
-        raise HTTPException(status_code=404, detail=f"a test with id:{test_id} does not exist")
+@router.post("/students/{student_id}/tests")
+def post_test(test: schemas.TestCreate, session: Session = Depends(get_session)):
+    test, err = crud_tests.post_test(session=session, test=test)
+    if err is not None:
+        raise HTTPException(status_code=404, detail=f"unable to add sat: {err}")
     return test
 
-@router.get("/tests", response_model=list[schemas.Test])
-def get_tests(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
-    tests = tests.get_tests(session=session, skip=skip, limit=limit)
-    # if users is []:
-    #     ...
+@router.get("/students/{student_id}/tests", response_model=list[schemas.Test])
+def get_tests_for_student(student_id: int, 
+        test_type: Optional[TestType] = None, 
+        session: Session = Depends(get_session)
+        ):
+    tests = crud_tests.get_tests_for_student(session=session, test_type=test_type, student_id=student_id)
+    if tests is None:
+        raise HTTPException(status_code=204, detail=f"this student has no tests") # is this the right way to return?
     return tests
+
+@router.get("/tests/{test_id}", response_model=schemas.Test)
+def get_test(
+        test_id: int, 
+        session: Session = Depends(get_session)
+        ):
+    tests = crud_tests.get_test(session=session, test_id=test_id)
+    if tests is None:
+        raise HTTPException(status_code=404, detail=f"test {test_id} does not exist") # is this the right way to return?
+    return tests
+
+@router.get("/tests", response_model=list[schemas.Test])
+def get_tests(
+        test_type: Optional[TestType] = None, 
+        session: Session = Depends(get_session)
+        ):
+    tests = crud_tests.get_tests(session=session, test_type=test_type)
+    if tests is None:
+        raise HTTPException(status_code=404, detail=f"no such tests exist") # is this the right way to return?
+    return tests
+
+@router.put("/tests/{test_id}", response_model=schemas.Student)
+def update_test(test_id: int, test_data: schemas.TestUpdate, session: Session = Depends(get_session)):
+    student, err = crud_tests.update_test(session=session, test_id=test_id, test_data=test_data)
+    if err is not None:
+        raise HTTPException(status_code=404, detail=f"error: {err}")
+    return student
 
 @router.delete("/tests/{test_id}", response_model=str)
 def delete_test(test_id: int, session: Session = Depends(get_session)):
-    test_id, test_name, user_id, err = crud_tests.delete_test(session=session, test_id=test_id)
+    test_id, err = crud_tests.delete_test(session=session, test_id=test_id)
     if err is not None:
         raise HTTPException(status_code=404, detail=f"error: {err}")
-    return f"Test ID: {test_id}, {test_name} for user {user_id} has been deleted"
+    return f"Test ID: {test_id} has been deleted"
+
 
 # SATs
 
 # TODO: identify appropriate convention for posting tests. Should this be done at the students endpoint?
-@router.post("/tests/sats",response_model=schemas.SAT)
-def post_sat(sat: schemas.SATCreate, session: Session = Depends(get_session)):
-    sat, err = crud_tests.post_sat(session=session, sat=sat)
-    if err is not None:
-        raise HTTPException(status_code=404, detail=f"unable to add sat: {err}")
-    return sat
+
 
 @router.get("/tests/sats/{sat_id}", response_model=schemas.Student)
 def get_student(student_id: int, session: Session = Depends(get_session)):
@@ -56,9 +84,3 @@ def get_students(skip: int = 0, limit: int = 10, session: Session = Depends(get_
     #     ...
     return students
 
-@router.put("/students/{student_id}", response_model=schemas.Student)
-def update_student(student_id: int, student_data: schemas.StudentUpdate, session: Session = Depends(get_session)):
-    student, err = crud_tests.update_student(session=session, student_id=student_id, student_data=student_data)
-    if err is not None:
-        raise HTTPException(status_code=404, detail=f"error: {err}")
-    return student

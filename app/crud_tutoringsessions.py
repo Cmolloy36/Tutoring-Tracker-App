@@ -15,6 +15,22 @@ def get_tutoring_sessions(session: Session, skip: int = 0, limit: int = 10):
     statement = sa.select(models.TutoringSession).offset(skip).limit(limit)
     return session.scalars(statement).all()
 
+def get_tutoring_sessions_for_student(session: Session, student_id: int, skip: int = 0, limit: int = 10):
+    err = validate_is_student(session=session, user_id=student_id)
+    if err is not None:
+        return None, err
+
+    statement = sa.select(models.TutoringSession).where(models.TutoringSession.student_id==student_id).offset(skip).limit(limit)
+    return session.scalars(statement).all()
+
+def get_tutoring_sessions_for_tutor(session: Session, tutor_id: int, skip: int = 0, limit: int = 10):
+    err = validate_is_tutor(session=session, user_id=tutor_id)
+    if err is not None:
+        return None, err
+
+    statement = sa.select(models.TutoringSession).where(models.TutoringSession.student_id==tutor_id).offset(skip).limit(limit)
+    return session.scalars(statement).all()
+
 def delete_tutoring_session(session: Session, tutoring_session_id: int):
     err = validate_is_tutoring_session(session=session, tutoring_session_id=tutoring_session_id)
     if err is not None:

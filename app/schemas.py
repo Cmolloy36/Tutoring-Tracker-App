@@ -1,7 +1,7 @@
 import datetime
 import sqlalchemy as sa
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, Field
+from typing import Optional, Annotated, Literal, Union
 
 ## I can define whatever models I want derived from the BaseModel to provide different fields for different endpoints
 
@@ -95,6 +95,7 @@ class Test(TestBase):
 # SATs
 
 class SATCreate(TestCreate):
+    test_type: Literal["SAT"] = "SAT"
     english_score: int
     math_score: int
 
@@ -117,6 +118,7 @@ class SAT(Test):
 # PSATs
 
 class PSATCreate(TestCreate):
+    test_type: Literal["PSAT"] = "PSAT"
     english_score: int
     math_score: int
 
@@ -139,6 +141,7 @@ class PSAT(Test):
 # ACTs
 
 class ACTCreate(TestCreate):
+    test_type: Literal["ACT"] = "ACT"
     english_score: int
     math_score: int
     reading_score: int
@@ -163,6 +166,8 @@ class ACT(Test):
 
     class Config:
         from_attributes = True
+
+TestCreate = Union[SATCreate, PSATCreate, ACTCreate]
 
 # Tutoring Sessions
 

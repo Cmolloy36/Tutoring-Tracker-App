@@ -7,20 +7,6 @@ from ..database import *
 
 router = APIRouter()
 
-@router.get("/tutoring_sessions/{tutoring_session_id}", response_model=schemas.TutoringSession)
-def get_tutoring_session(tutoring_session_id: int, session: Session = Depends(get_session)):
-    tutoring_session = crud_tutoringsessions.get_tutoring_session(session=session, tutoring_session_id=tutoring_session_id)
-    if tutoring_session is None:
-        raise HTTPException(status_code=404, detail=f"a tutoring_session with this id does not exist")
-    return tutoring_session
-
-@router.get("/tutoring_sessions", response_model=list[schemas.TutoringSession])
-def get_tutoring_sessions(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
-    tutoring_sessions = crud_tutoringsessions.get_tutoring_sessions(session=session, skip=skip, limit=limit)
-    if tutoring_sessions is None:
-        raise HTTPException(status_code=204, detail=f"no tutoring sessions exist!")
-    return tutoring_sessions
-
 @router.post("/tutoring_sessions",response_model=schemas.TutoringSession)
 def post_tutoring_session(tutoring_session: schemas.TutoringSessionCreate, session: Session = Depends(get_session)):
     tutoring_session, err = crud_tutoringsessions.post_tutoring_session(session=session, tutoring_session=tutoring_session)
@@ -32,14 +18,28 @@ def post_tutoring_session(tutoring_session: schemas.TutoringSessionCreate, sessi
 def get_tutoring_session(tutoring_session_id: int, session: Session = Depends(get_session)):
     tutoring_session = crud_tutoringsessions.get_tutoring_session(session=session, tutoring_session_id=tutoring_session_id)
     if tutoring_session is None:
-        raise HTTPException(status_code=404, detail=f"a tutoring_session with this id does not exist")
+        raise HTTPException(status_code=404, detail=f"a tutoring_session with id {tutoring_session_id} does not exist")
     return tutoring_session
 
 @router.get("/tutoring_sessions", response_model=list[schemas.TutoringSession])
 def get_tutoring_sessions(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
     tutoring_sessions = crud_tutoringsessions.get_tutoring_sessions(session=session, skip=skip, limit=limit)
-    # if tutoring_sessions is []:
-    #     ...
+    if tutoring_sessions is None:
+        raise HTTPException(status_code=204, detail=f"no tutoring sessions exist!")
+    return tutoring_sessions
+
+@router.get("/students/{student_id}/tutoring_sessions", response_model=list[schemas.TutoringSession])
+def get_tutoring_sessions(student_id: int, skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
+    tutoring_sessions = crud_tutoringsessions.get_tutoring_sessions_for_student(session=session, student_id=student_id, skip=skip, limit=limit)
+    if tutoring_sessions is None:
+        raise HTTPException(status_code=204, detail=f"no tutoring sessions exist for this student!")
+    return tutoring_sessions
+
+@router.get("/tutors/{tutor_id}/tutoring_sessions", response_model=list[schemas.TutoringSession])
+def get_tutoring_sessions(tutor_id: int, skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
+    tutoring_sessions = crud_tutoringsessions.get_tutoring_sessions_for_tutor(session=session, tutor_id=tutor_id, skip=skip, limit=limit)
+    if tutoring_sessions is None:
+        raise HTTPException(status_code=204, detail=f"no tutoring sessions exist for this tutor!")
     return tutoring_sessions
 
 @router.put("/tutoring_sessions/{tutoring_session_id}", response_model=schemas.TutoringSession)

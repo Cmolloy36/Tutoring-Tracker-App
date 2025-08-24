@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 class Base(sa.orm.DeclarativeBase):
     pass
