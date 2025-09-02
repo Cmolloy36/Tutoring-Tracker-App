@@ -18,7 +18,7 @@ def post_test(session: Session, student_id: int, test_type: TestType, test: sche
             name=test.name,
             date_completed=test.date_completed,
             test_notes=test.test_notes,
-            type=test_type,
+            test_type=test_type,
             student_id=student_id,
             english_score=test.english_score,
             math_score=test.math_score
@@ -28,7 +28,7 @@ def post_test(session: Session, student_id: int, test_type: TestType, test: sche
             name=test.name,
             date_completed=test.date_completed,
             test_notes=test.test_notes,
-            type=test_type,
+            test_type=test_type,
             student_id=student_id,
             english_score=test.english_score,
             math_score=test.math_score
@@ -38,7 +38,7 @@ def post_test(session: Session, student_id: int, test_type: TestType, test: sche
             name=test.name,
             date_completed=test.date_completed,
             test_notes=test.test_notes,
-            type=test_type,
+            test_type=test_type,
             student_id=student_id,
             english_score=test.english_score,
             math_score=test.math_score,
@@ -49,7 +49,7 @@ def post_test(session: Session, student_id: int, test_type: TestType, test: sche
     session.add(test_response)
     session.commit()
     session.refresh(test_response)
-    return get_test(test_response), None
+    return test_response, None #consider a response function
 
 def get_test(session: Session, test_id: int):
     statement = sa.select(models.Test).where(models.Test.id==test_id)
@@ -59,14 +59,14 @@ def get_tests(session: Session, test_type: TestType, skip: int = 0, limit: int =
     if test_type is None:
         statement = sa.select(models.Test).offset(skip).limit(limit)
     else:
-        statement = sa.select(models.Test).where(models.Test.type==test_type).offset(skip).limit(limit)
+        statement = sa.select(models.Test).where(models.Test.test_type==test_type).offset(skip).limit(limit)
     return session.scalars(statement).all()
 
 def get_tests_for_student(session: Session, student_id: int, test_type: TestType, skip: int = 0, limit: int = 10):
     if test_type is None:
         statement = sa.select(models.Test).where(models.Test.student_id==student_id).offset(skip).limit(limit)
     else:
-        statement = sa.select(models.Test).where(models.Test.student_id==student_id,models.Test.type==test_type).offset(skip).limit(limit)
+        statement = sa.select(models.Test).where(models.Test.student_id==student_id,models.Test.test_type==test_type).offset(skip).limit(limit)
     return session.scalars(statement).all()
 
 def update_test(session: Session, test_id: int, test_data: schemas.TestUpdate) -> tuple[models.Test, str]:

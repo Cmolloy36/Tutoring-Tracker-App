@@ -83,7 +83,6 @@ class Test(TestBase):
     updated_at: datetime.datetime
     test_type: str
     student_id: int = None
-    student_name: str
     test_notes: str
     #consider adding a get_score() method to get score of any test
 
@@ -108,7 +107,7 @@ class SATUpdate(BaseModel):
     math_score: Optional[int] = None
     
 class SAT(Test):
-    total_score: int # How do i calculate this here?
+    # total_score: int # How do i calculate this here?
     english_score: int
     math_score: int
 
@@ -129,7 +128,7 @@ class PSATUpdate(BaseModel):
     math_score: Optional[int] = None
     
 class PSAT(Test):
-    total_score: int
+    # total_score: int
     english_score: int
     math_score: int
 
@@ -156,7 +155,7 @@ class ACTUpdate(BaseModel):
     science_score: Optional[int] = None
     
 class ACT(Test):
-    total_score: int
+    # total_score: int
     english_score: int
     math_score: int
     reading_score: int

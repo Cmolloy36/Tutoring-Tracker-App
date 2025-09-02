@@ -34,7 +34,7 @@ def post_test(student_id: int,
         raise HTTPException(status_code=404, detail=f"unable to add test: {err}")
     return test
 
-@router.get("/students/{student_id}/tests", response_model=list[schemas.Test])
+@router.get("/students/{student_id}/tests", response_model=list[schemas.TestResponse])
 def get_tests_for_student(student_id: int, 
         test_type: Optional[TestType] = None, 
         session: Session = Depends(get_session)
@@ -44,7 +44,7 @@ def get_tests_for_student(student_id: int,
         raise HTTPException(status_code=204, detail=f"this student has no tests") # is this the right way to return?
     return tests
 
-@router.get("/tests/{test_id}", response_model=schemas.Test)
+@router.get("/tests/{test_id}",response_model=schemas.TestResponse)
 def get_test(
         test_id: int, 
         session: Session = Depends(get_session)
