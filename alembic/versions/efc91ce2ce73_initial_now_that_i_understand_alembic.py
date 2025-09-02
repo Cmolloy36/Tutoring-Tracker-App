@@ -36,7 +36,7 @@ def upgrade() -> None:
     sa.Column('date_completed', sa.TIMESTAMP(), nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(), nullable=False),
-    sa.Column('type', sa.String(), nullable=False),
+    sa.Column('test_type', sa.String(), nullable=False),
     sa.Column('test_notes', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
@@ -46,7 +46,7 @@ def upgrade() -> None:
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('created_at', sa.TIMESTAMP(), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(), nullable=False),
-    sa.Column('type', sa.String(), nullable=False),
+    sa.Column('user_type', sa.String(), nullable=False),
     sa.Column('password_hash', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')

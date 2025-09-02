@@ -8,25 +8,48 @@ from .helper_classes import *
 
 # Tests
 
-def post_test(session: Session, test: schemas.TestCreate):
+def post_test(session: Session, student_id: int, test_type: TestType, test: schemas.TestCreate):
     err = validate_is_student(session=session, user_id=test.student_id)
     if err is not None:
         return None, err
+    
+    if test_type is TestType.SAT:
+        test_response = models.SAT(
+            name=test.name,
+            date_completed=test.date_completed,
+            test_notes=test.test_notes,
+            type=test_type,
+            student_id=student_id,
+            english_score=test.english_score,
+            math_score=test.math_score
+        )
+    elif test_type is TestType.PSAT:
+        test_response = models.PSAT(
+            name=test.name,
+            date_completed=test.date_completed,
+            test_notes=test.test_notes,
+            type=test_type,
+            student_id=student_id,
+            english_score=test.english_score,
+            math_score=test.math_score
+        )
+    elif test_type is TestType.ACT:
+        test_response = models.ACT(
+            name=test.name,
+            date_completed=test.date_completed,
+            test_notes=test.test_notes,
+            type=test_type,
+            student_id=student_id,
+            english_score=test.english_score,
+            math_score=test.math_score,
+            reading_score=test.reading_score,
+            science_score=test.science_score
+        )
 
-    test = models.Test(
-        name=test.name,
-        date_completed=test.date_completed,
-        test_notes=test.test_notes,
-        type=test_type,
-        student_id=test.student_id,
-        english_score=test.english_score,
-        math_score=test.math_score
-    )
-
-    session.add(test)
+    session.add(test_response)
     session.commit()
-    session.refresh(test)
-    return test, None
+    session.refresh(test_response)
+    return get_test(test_response), None
 
 def get_test(session: Session, test_id: int):
     statement = sa.select(models.Test).where(models.Test.id==test_id)

@@ -14,10 +14,24 @@ router = APIRouter()
 # Tests
 
 @router.post("/students/{student_id}/tests")
-def post_test(test: schemas.TestCreate, session: Session = Depends(get_session)):
-    test, err = crud_tests.post_test(session=session, test=test)
+def post_test(student_id: int, 
+              test: schemas.TestCreate, 
+              session: Session = Depends(get_session)
+              ):
+    
+    # How does it know if the input data fits the SAT create? If it checks against the format, how would PSAT ever be reached?
+    if isinstance(test, schemas.SATCreate):
+        test_type = TestType.SAT
+    elif isinstance(test, schemas.PSATCreate):
+        test_type = TestType.PSAT
+    elif isinstance(test, schemas.ACTCreate):
+        test_type = TestType.ACT
+    else:
+        raise HTTPException(status_code=404, detail=f"unable to add test: this test type does not exist")
+
+    test, err = crud_tests.post_test(session=session, student_id=student_id, test_type=test_type, test=test)
     if err is not None:
-        raise HTTPException(status_code=404, detail=f"unable to add sat: {err}")
+        raise HTTPException(status_code=404, detail=f"unable to add test: {err}")
     return test
 
 @router.get("/students/{student_id}/tests", response_model=list[schemas.Test])
@@ -50,9 +64,9 @@ def get_tests(
         raise HTTPException(status_code=404, detail=f"no such tests exist") # is this the right way to return?
     return tests
 
-@router.put("/tests/{test_id}", response_model=schemas.Student)
-def update_test(test_id: int, test_data: schemas.TestUpdate, session: Session = Depends(get_session)):
-    student, err = crud_tests.update_test(session=session, test_id=test_id, test_data=test_data)
+@router.put("/tests/{test_id}", response_model=schemas.Test)
+def update_test(test_id: int, test: schemas.TestUpdate, session: Session = Depends(get_session)):
+    student, err = crud_tests.update_test(session=session, test_id=test_id, test=test)
     if err is not None:
         raise HTTPException(status_code=404, detail=f"error: {err}")
     return student
@@ -64,23 +78,4 @@ def delete_test(test_id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail=f"error: {err}")
     return f"Test ID: {test_id} has been deleted"
 
-
-# SATs
-
 # TODO: identify appropriate convention for posting tests. Should this be done at the students endpoint?
-
-
-@router.get("/tests/sats/{sat_id}", response_model=schemas.Student)
-def get_student(student_id: int, session: Session = Depends(get_session)):
-    student = crud_tests.get_student(session=session, student_id=student_id)
-    if student is None:
-        raise HTTPException(status_code=404, detail=f"a student with this id does not exist")
-    return student
-
-@router.get("/students", response_model=list[schemas.Student])
-def get_students(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
-    students = crud_tests.get_students(session=session, skip=skip, limit=limit)
-    # if students is []:
-    #     ...
-    return students
-

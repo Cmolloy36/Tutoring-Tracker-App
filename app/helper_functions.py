@@ -1,5 +1,6 @@
 import re
 import sqlalchemy as sa
+from sqlalchemy.orm import Session
 
 from . import models
 
@@ -10,13 +11,10 @@ sat_type = "SAT"
 psat_type = "PSAT"
 act_type = "ACT"
 
-def validate_email(session: sa.orm.Session, email: str):
+def validate_email(session: Session, email: str):
     err = None
     if not validate_email_regex(email):
         err = "invalid email format"
-
-    if not validate_email_unique(session, email):
-        err = "a user with this email already exists"
 
     return err
 
@@ -28,23 +26,16 @@ def validate_email_regex(email):
     
     return False
 
-def validate_email_unique(session: sa.orm.Session, email: str):
-    # This is currently useless. There is an email constraint on the DB so a 
-    statement = sa.select(models.User).where(models.User.email==email)
-    if session.scalars(statement).first() is None:
-        return True
-    return False
-
 def hash_password(password: str): # What return type should the hash be? What lib do i use
     # ...
     return password
     
-def validate_password(session: sa.orm.Session, password: str):
+def validate_password(session: Session, password: str):
     # ...
     return True
 
 # consider making these into one function with passable type input
-def validate_is_student(session: sa.orm.Session, user_id: int):
+def validate_is_student(session: Session, user_id: int):
     err = None
     user = session.query(models.User).filter_by(id=user_id).first()
     if user is None:
@@ -54,7 +45,7 @@ def validate_is_student(session: sa.orm.Session, user_id: int):
 
     return err
 
-def validate_is_tutor(session: sa.orm.Session, user_id: int):
+def validate_is_tutor(session: Session, user_id: int):
     err = None
     user = session.query(models.User).filter_by(id=user_id).first()
     if user is None:
@@ -64,7 +55,7 @@ def validate_is_tutor(session: sa.orm.Session, user_id: int):
 
     return err
 
-def validate_is_user(session: sa.orm.Session, user_id: int):
+def validate_is_user(session: Session, user_id: int):
     err = None
     user = session.query(models.User).filter_by(id=user_id).first()
     if user is None:
@@ -73,14 +64,14 @@ def validate_is_user(session: sa.orm.Session, user_id: int):
 
 # TODO: Consolidate these into one function
 
-def validate_is_test(session: sa.orm.Session, test_id: int):
+def validate_is_test(session: Session, test_id: int):
     err = None
     test = session.query(models.Test).filter_by(id=test_id).first()
     if test is None:
         err = f"Test {test_id} does not exist"
     return err
 
-def validate_is_sat(session: sa.orm.Session, test_id: int):
+def validate_is_sat(session: Session, test_id: int):
     err = None
     test = session.query(models.Test).filter_by(id=test_id).first()
     if test is None:
@@ -90,7 +81,7 @@ def validate_is_sat(session: sa.orm.Session, test_id: int):
 
     return err
 
-def validate_is_psat(session: sa.orm.Session, test_id: int):
+def validate_is_psat(session: Session, test_id: int):
     err = None
     test = session.query(models.Test).filter_by(id=test_id).first()
     if test is None:
@@ -100,7 +91,7 @@ def validate_is_psat(session: sa.orm.Session, test_id: int):
 
     return err
 
-def validate_is_act(session: sa.orm.Session, test_id: int):
+def validate_is_act(session: Session, test_id: int):
     err = None
     test = session.query(models.Test).filter_by(id=test_id).first()
     if test is None:
@@ -113,7 +104,7 @@ def validate_is_act(session: sa.orm.Session, test_id: int):
 
 # Tutoring sessions
 
-def validate_is_tutoring_session(session: sa.orm.Session, tutoring_session_id: int):
+def validate_is_tutoring_session(session: Session, tutoring_session_id: int):
     err = None
     tutoring_session = session.query(models.TutoringSession).filter_by(id=tutoring_session_id).first()
     if tutoring_session is None:

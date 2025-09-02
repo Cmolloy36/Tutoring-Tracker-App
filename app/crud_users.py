@@ -4,6 +4,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import Session
 from . import models, schemas
 from .helper_functions import *
+from .helper_classes import *
 
 # Users
 
@@ -35,9 +36,11 @@ def post_student(session: Session, student: schemas.StudentCreate) -> tuple[mode
     student = models.Student(
         name=student.name,
         email=student.email,
-        type=student_type,
         password_hash=hash_password(student.password)
     )
+
+    # print(student.type)
+
     session.add(student)
     session.commit()
     session.refresh(student)
@@ -90,9 +93,10 @@ def post_tutor(session: Session, tutor: schemas.TutorCreate) -> tuple[models.Tut
     tutor = models.Tutor(
         name=tutor.name,
         email=tutor.email,
-        type="tutor",
         password_hash=hash_password(tutor.password)
     )
+
+    print(tutor.type)
     session.add(tutor)
     session.commit()
     session.refresh(tutor)
