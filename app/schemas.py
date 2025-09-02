@@ -35,12 +35,12 @@ class StudentCreate(UserCreate):
     pass
 
 class StudentUpdate(BaseModel):
-    name: Optional[str]
-    email: Optional[str]
-    tutor_id: Optional[int]
+    name: Optional[str] = None
+    email: Optional[str] = None
+    tutor_id: Optional[int] = None
 
 class Student(User):
-    tutor_id: int
+    tutor_id: Optional[int]
 
     class Config:
         from_attributes = True
@@ -51,11 +51,11 @@ class TutorCreate(UserCreate):
     pass
 
 class TutorUpdate(BaseModel):
-    name: Optional[str]
-    email: Optional[str]
+    name: Optional[str] = None
+    email: Optional[str] = None
 
 class Tutor(User):
-    student_ids: list[int]
+    student_ids: Optional[list[int]]
 
     class Config:
         from_attributes = True
@@ -66,23 +66,23 @@ class TestBase(BaseModel):
     name: str
     date_completed: datetime.date #how do i input date in the json payload ?
     test_notes: str
-    student_id: int
+    student_id: Optional[int] = None
 
 class TestCreate(TestBase):
     pass
 
 class TestUpdate(BaseModel):
-    name: Optional[str]
-    date_completed: Optional[datetime.date]
-    test_notes: Optional[str]
-    student_id: Optional[int]
+    name: Optional[str] = None
+    date_completed: Optional[datetime.date] = None
+    test_notes: Optional[str] = None
+    student_id: Optional[int] = None
     
 class Test(TestBase):
     id: int
     created_at: datetime.datetime
     updated_at: datetime.datetime
     test_type: str
-    student_id: int
+    student_id: int = None
     student_name: str
     test_notes: str
     #consider adding a get_score() method to get score of any test
@@ -100,12 +100,12 @@ class SATCreate(SATTestBase):
     test_type: Literal["SAT"] = "SAT"
 
 class SATUpdate(BaseModel):
-    name: Optional[str]
-    date_completed: Optional[datetime.date]
-    test_notes: Optional[str]
-    student_id: Optional[int]
-    english_score: Optional[int]
-    math_score: Optional[int]
+    name: Optional[str] = None
+    date_completed: Optional[datetime.date] = None
+    test_notes: Optional[str] = None
+    student_id: Optional[int] = None
+    english_score: Optional[int] = None
+    math_score: Optional[int] = None
     
 class SAT(Test):
     total_score: int # How do i calculate this here?
@@ -121,12 +121,12 @@ class PSATCreate(SATTestBase):
     test_type: Literal["PSAT"] = "PSAT"
 
 class PSATUpdate(BaseModel):
-    name: Optional[str]
-    date_completed: Optional[datetime.date]
-    test_notes: Optional[str]
-    student_id: Optional[int]
-    english_score: Optional[int]
-    math_score: Optional[int]
+    name: Optional[str] = None
+    date_completed: Optional[datetime.date] = None
+    test_notes: Optional[str] = None
+    student_id: Optional[int] = None
+    english_score: Optional[int] = None
+    math_score: Optional[int] = None
     
 class PSAT(Test):
     total_score: int
@@ -146,14 +146,14 @@ class ACTCreate(TestCreate):
     science_score: int
 
 class ACTUpdate(BaseModel):
-    name: Optional[str]
-    date_completed: Optional[datetime.date]
-    test_notes: Optional[str]
-    student_id: Optional[int]
-    english_score: Optional[int]
-    math_score: Optional[int]
-    reading_score: Optional[int]
-    science_score: Optional[int]
+    name: Optional[str] = None
+    date_completed: Optional[datetime.date] = None
+    test_notes: Optional[str] = None
+    student_id: Optional[int] = None
+    english_score: Optional[int] = None
+    math_score: Optional[int] = None
+    reading_score: Optional[int] = None
+    science_score: Optional[int] = None
     
 class ACT(Test):
     total_score: int
@@ -183,12 +183,12 @@ class TutoringSessionCreate(TutoringSessionBase):
     pass
 
 class TutoringSessionUpdate(BaseModel):
-    date_completed: Optional[datetime.date]
-    payment_amount: Optional[int]
-    session_notes: Optional[str]
-    student_id: Optional[int]
-    tutor_id: Optional[int]
-    test_id: int
+    date_completed: Optional[datetime.date] = None
+    payment_amount: Optional[int] = None
+    session_notes: Optional[str] = None
+    student_id: Optional[int] = None
+    tutor_id: Optional[int] = None
+    test_id: int = None
 
 class TutoringSession(BaseModel):
     date_completed: datetime.date

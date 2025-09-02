@@ -14,30 +14,26 @@ class User(Base):
     email: Mapped[str] = mapped_column(sa.String, unique=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
     updated_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
-    user_type: Mapped[str] = mapped_column(nullable=False)
+    type: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str] = mapped_column(nullable=False)
 
     __mapper_args__ = {
         "polymorphic_identity": "user",
-        "polymorphic_on": user_type,
-        "with_polymorphic": "*",
+        "polymorphic_on": "type",
     }
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(id={self.id}, name={self.name}, email={self.email}, type={self.user_type})"
+        return f"{self.__class__.__name__}(id={self.id}, name={self.name}, email={self.email}, type={self.type})"
 
 class Student(User):
     __tablename__ = "students"
 
-    id = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
-    # tutor_id: Mapped[Optional[int]] = mapped_column(nullable=True)
+    id: Mapped[int] = mapped_column(sa.ForeignKey("users.id"), primary_key=True)
+    tutor_id: Mapped[int] = mapped_column(sa.ForeignKey("tutors.id"),nullable=True)
+    tutor: Mapped["Tutor"] = relationship("Tutor", back_populates="students",foreign_keys=[tutor_id])
     parent_name: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
-    tutor_id: Mapped[int] = mapped_column(sa.ForeignKey("tutors.id"))
-    tutor: Mapped["Tutor"] = relationship(back_populates="students", foreign_keys=[tutor_id])
-    tests: Mapped[list["Test"]] = relationship(back_populates="student")
-    tutoring_sessions: Mapped[list["TutoringSession"]] = relationship(back_populates="student")
-    # parent_email: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
-    # completed_exit_survey: Mapped[bool] = mapped_column(sa.Boolean,default=False)
+    tests: Mapped["Test"] = relationship(back_populates="student")
+    tutoring_sessions: Mapped["TutoringSession"] = relationship(back_populates="student")
 
     __mapper_args__ = {
         "polymorphic_identity": "student",
@@ -50,9 +46,9 @@ class Student(User):
 class Tutor(User):
     __tablename__ = "tutors"
 
-    id = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    id: Mapped[int] = mapped_column(sa.ForeignKey("users.id"), primary_key=True)
     # favorite_color: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
-    students: Mapped[list["Student"]] = relationship(back_populates="tutor", foreign_keys="[Student.tutor_id]")
+    students: Mapped[list["Student"]] = relationship(back_populates="tutor",foreign_keys="[Student.tutor_id]")
     tutoring_sessions: Mapped[list["TutoringSession"]] = relationship(back_populates="tutor")
 
     __mapper_args__ = {
