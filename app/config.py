@@ -1,9 +1,8 @@
 import os
+from dotenv import find_dotenv
 from pathlib import Path
-from typing import Optional
-
 from pydantic_settings import BaseSettings
-
+from typing import Optional
 
 class Settings(BaseSettings):
     database_hostname: str
@@ -11,6 +10,7 @@ class Settings(BaseSettings):
     database_name: str
     database_password: Optional[str] = None
     database_username: str
+    fastapi_port: int
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int
@@ -25,7 +25,7 @@ class Settings(BaseSettings):
             self.database_password = get_db_password()
 
     class Config:
-        env_file = ".env"
+        env_file = find_dotenv()
 
 
 def get_db_password():
