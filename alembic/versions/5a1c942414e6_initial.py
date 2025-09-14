@@ -34,7 +34,7 @@ def upgrade() -> None:
     )
     op.create_table('tutors',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['id'], ['users.id'], ondelete="CASCADE"),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('students',
@@ -42,7 +42,7 @@ def upgrade() -> None:
     sa.Column('tutor_id', sa.Integer(), nullable=True),
     sa.Column('parent_name', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['tutor_id'], ['tutors.id'], ),
+    sa.ForeignKeyConstraint(['tutor_id'], ['tutors.id'], ondelete="CASCADE"),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('tests',

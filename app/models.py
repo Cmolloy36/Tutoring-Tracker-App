@@ -28,7 +28,7 @@ class User(Base):
 class Student(User):
     __tablename__ = "students"
 
-    id: Mapped[int] = mapped_column(sa.ForeignKey("users.id"), primary_key=True)
+    id: Mapped[int] = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     tutor_id: Mapped[int] = mapped_column(sa.ForeignKey("tutors.id"),nullable=True)
     tutor: Mapped["Tutor"] = relationship("Tutor", back_populates="students",foreign_keys=[tutor_id])
     parent_name: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
@@ -46,7 +46,7 @@ class Student(User):
 class Tutor(User):
     __tablename__ = "tutors"
 
-    id: Mapped[int] = mapped_column(sa.ForeignKey("users.id"), primary_key=True)
+    id: Mapped[int] = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     # favorite_color: Mapped[Optional[str]] = mapped_column(sa.String,nullable=True)
     students: Mapped[list["Student"]] = relationship(back_populates="tutor",foreign_keys="[Student.tutor_id]")
     tutoring_sessions: Mapped[list["TutoringSession"]] = relationship(back_populates="tutor")

@@ -13,7 +13,7 @@ router = APIRouter()
 
 # Tests
 
-@router.post("/students/{student_id}/tests")
+@router.post("/students/{student_id}/tests",response_model=schemas.TestResponse)
 def post_test(student_id: int, 
               test: schemas.TestCreate, 
               session: Session = Depends(get_session)
@@ -54,7 +54,7 @@ def get_test(
         raise HTTPException(status_code=404, detail=f"test {test_id} does not exist") # is this the right way to return?
     return tests
 
-@router.get("/tests", response_model=list[schemas.Test])
+@router.get("/tests", response_model=list[schemas.TestResponse])
 def get_tests(
         test_type: Optional[TestType] = None, 
         session: Session = Depends(get_session)
@@ -64,7 +64,7 @@ def get_tests(
         raise HTTPException(status_code=404, detail=f"no such tests exist") # is this the right way to return?
     return tests
 
-@router.put("/tests/{test_id}", response_model=schemas.Test)
+@router.put("/tests/{test_id}", response_model=schemas.TestResponse)
 def update_test(test_id: int, test: schemas.TestUpdate, session: Session = Depends(get_session)):
     student, err = crud_tests.update_test(session=session, test_id=test_id, test=test)
     if err is not None:

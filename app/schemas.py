@@ -60,6 +60,10 @@ class Tutor(User):
     class Config:
         from_attributes = True
 
+# UserCreate = Union[SATCreate, PSATCreate, ACTCreate]
+
+UserResponse = Union[Student, Tutor]
+
 # Tests
 
 class TestBase(BaseModel):
@@ -82,8 +86,6 @@ class Test(TestBase):
     created_at: datetime.datetime
     updated_at: datetime.datetime
     test_type: str
-    student_id: int = None
-    test_notes: str
     #consider adding a get_score() method to get score of any test
 
     class Config:

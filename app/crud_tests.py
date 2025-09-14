@@ -97,10 +97,10 @@ def delete_test(session: Session, test_id: int):
     if err is not None:
         return None, err
 
-    statement = sa.delete(models.Test).where(models.Test.id==test_id).returning(models.Test.id, models.Test.name, models.Test.fk_students)
+    statement = sa.delete(models.Test).where(models.Test.id==test_id) # return test ID or name?
     result = session.execute(statement)
     session.commit()
-    return result.id, err
+    return None, err
 
 # SATs
 

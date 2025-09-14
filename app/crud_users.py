@@ -19,12 +19,13 @@ def get_users(session: Session, skip: int = 0, limit: int = 10):
 def delete_user(session: Session, user_id: int):
     err = validate_is_user(session=session, user_id=user_id)
     if err is not None:
-        return None, None, err
+        return err
 
-    statement = sa.delete(models.User).where(models.User.id==user_id).returning(models.User.name, models.User.id)
-    result = session.execute(statement)
+    # try except this?
+    user = get_user(session=session, user_id=user_id)
+    session.delete(user)
     session.commit()
-    return result.first().name, user_id, err
+    return err
 
 # Students
 

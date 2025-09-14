@@ -1,13 +1,17 @@
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from .. import crud_users, schemas
 from ..database import *
+from ..helper_classes import UserType
+
+# TODO: Change this to use UserResponse schema to handle each user type differently (like tests)
 
 # User-related endpoints
 router = APIRouter()
 
-@router.get("/users/{user_id}", response_model=schemas.User)
+@router.get("/users/{user_id}", response_model=schemas.UserResponse)
 def get_user(user_id: int, session: Session = Depends(get_session)):
     user = crud_users.get_user(session=session, user_id=user_id)
     if user is None:
@@ -22,11 +26,12 @@ def get_users(skip: int = 0, limit: int = 10, session: Session = Depends(get_ses
     return users
 
 @router.delete("/users/{user_id}", response_model=str)
-def delete_user(user_id: int, session: Session = Depends(get_session)):
-    user_name, user_id, err = crud_users.delete_user(session=session, user_id=user_id)
+def delete_user(user_id: int,
+                session: Session = Depends(get_session)):
+    err = crud_users.delete_user(session=session, user_id=user_id)
     if err is not None:
         raise HTTPException(status_code=404, detail=f"error: {err}")
-    return f"{user_name} (user_id: {user_id}) has been deleted"
+    return f"User {user_id} has been deleted"
 
 # Students
 
