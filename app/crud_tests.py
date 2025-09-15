@@ -9,7 +9,7 @@ from .helper_classes import *
 # Tests
 
 def post_test(session: Session, student_id: int, test_type: TestType, test: schemas.TestCreate):
-    err = validate_is_student(session=session, user_id=test.student_id)
+    err = validate_is_student(session=session, user_id=student_id)
     if err is not None:
         return None, err
     

@@ -70,7 +70,6 @@ class TestBase(BaseModel):
     name: str
     date_completed: datetime.date #how do i input date in the json payload ?
     test_notes: str
-    student_id: Optional[int] = None
 
 class TestCreate(TestBase):
     pass

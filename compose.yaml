@@ -1,7 +1,7 @@
 services:
   # "app" automatically becomes network alias
   app-backend:
-    container_name: app
+    container_name: fastapi-app
     env_file:
       - .env
     # image: cmolloy36/tutoring-tracker:latest
@@ -15,12 +15,21 @@ services:
     #   - ./backend:/app
     depends_on:
       postgres-db:
-        condition: service_healthy # makes sure db is connected before webapp starts. Need to define health check
+        condition: service_healthy # makes sure db is connected before webapp starts.
     environment:
       DATABASE_PASSWORD: /run/secrets/db_password
       DATABASE_HOSTNAME: postgres-db
     secrets:
       - db_password
+
+  streamlit-app:
+    container_name: streamlit-app
+    env_file:
+      - .env
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
 
   postgres-db:
     image: postgres:latest
