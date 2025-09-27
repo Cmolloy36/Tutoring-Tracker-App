@@ -11,4 +11,4 @@ This app is built on a FastAPI backend and leverages streamlit for a simple fron
 Run `git clone https://github.com/Cmolloy36/Tutoring-Tracker-App` in your desired repository.
 
 ### Running the App
-Make sure Docker is installed and running on your system. In the root directory, run `docker compose up`. Access `http:localhost:8000/docs`, and be sure to add at least one student and one test for that student. Next, navigate to `http:localhost:8501` to see the data analysis.
+Make sure Docker is installed and running on your system. In the root directory, run `docker compose up`. Access `http://localhost:8000/docs`, and be sure to add at least one student and one test for that student. Next, navigate to `http://localhost:8501` to see the data analysis.
