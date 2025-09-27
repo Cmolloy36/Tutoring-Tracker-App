@@ -5,7 +5,7 @@ import requests as r
 
 st.write("Student Data Visualization")
 
-get_students_url = f'http://localhost:8000/students' 
+get_students_url = f'http://fastapi-app:8000/students' 
 response = r.get(get_students_url)
 students_data = response.json()
 students_df = pd.DataFrame(students_data)
@@ -21,7 +21,7 @@ with st.container(border=True):
 selected_student = students_df.loc[students_df['name'] == selected_student_name]
 student_id = selected_student.loc[0,'id']
 
-get_tests_url = f'http://localhost:8000/students/{student_id}/tests' 
+get_tests_url = f'http://fastapi-app:8000/students/{student_id}/tests' 
 response = r.get(get_tests_url)
 test_data = response.json()
 test_df = pd.DataFrame(test_data)

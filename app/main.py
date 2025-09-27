@@ -30,6 +30,10 @@ app.include_router(router_tutoringsessions.router)
 async def root():
     return {"message": "Tutoring Tracker is ready to rock 'n roll!"}
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
+
 # Start the FastAPI server
 if __name__ == "__main__":
     uvicorn.run(app, host=f"127.0.0.1:{settings.fastapi_port}")
