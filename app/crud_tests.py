@@ -21,7 +21,9 @@ def post_test(session: Session, student_id: int, test_type: TestType, test: sche
             test_type=test_type,
             student_id=student_id,
             english_score=test.english_score,
-            math_score=test.math_score
+            math_score=test.math_score,
+            total_score=(test.math_score + test.english_score),
+            is_official=test.is_official
         )
     elif test_type is TestType.PSAT:
         test_response = models.PSAT(
@@ -31,7 +33,9 @@ def post_test(session: Session, student_id: int, test_type: TestType, test: sche
             test_type=test_type,
             student_id=student_id,
             english_score=test.english_score,
-            math_score=test.math_score
+            math_score=test.math_score,
+            total_score=(test.math_score + test.english_score),
+            is_official=test.is_official
         )
     elif test_type is TestType.ACT:
         test_response = models.ACT(
@@ -43,7 +47,9 @@ def post_test(session: Session, student_id: int, test_type: TestType, test: sche
             english_score=test.english_score,
             math_score=test.math_score,
             reading_score=test.reading_score,
-            science_score=test.science_score
+            science_score=test.science_score,
+            total_score=(test.math_score + test.english_score + test.reading_score + test.science_score) / 4,
+            is_official=test.is_official
         )
 
     session.add(test_response)
@@ -89,7 +95,7 @@ def update_test(session: Session, test_id: int, test_data: schemas.TestUpdate) -
         setattr(test_to_update,key,val)
 
     session.commit()
-    updated_test = get_test(session=session,tutor_id=test_id)
+    updated_test = get_test(session=session,test_id=test_id)
     return updated_test, err
 
 def delete_test(session: Session, test_id: int):

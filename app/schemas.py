@@ -55,7 +55,7 @@ class TutorUpdate(BaseModel):
     email: Optional[str] = None
 
 class Tutor(User):
-    student_ids: Optional[list[int]]
+    student_ids: Optional[list[int]] = None
 
     class Config:
         from_attributes = True
@@ -70,6 +70,7 @@ class TestBase(BaseModel):
     name: str
     date_completed: datetime.date #how do i input date in the json payload ?
     test_notes: str
+    is_official: bool
 
 class TestCreate(TestBase):
     pass
@@ -79,13 +80,15 @@ class TestUpdate(BaseModel):
     date_completed: Optional[datetime.date] = None
     test_notes: Optional[str] = None
     student_id: Optional[int] = None
+    is_official: Optional[bool] = None
     
 class Test(TestBase):
     id: int
     created_at: datetime.datetime
     updated_at: datetime.datetime
     test_type: str
-    #consider adding a get_score() method to get score of any test
+    is_official: bool
+    total_score: int
 
     class Config:
         from_attributes = True
@@ -106,6 +109,7 @@ class SATUpdate(BaseModel):
     student_id: Optional[int] = None
     english_score: Optional[int] = None
     math_score: Optional[int] = None
+    is_official: Optional[bool] = None
     
 class SAT(Test):
     # total_score: int # How do i calculate this here?
@@ -127,6 +131,7 @@ class PSATUpdate(BaseModel):
     student_id: Optional[int] = None
     english_score: Optional[int] = None
     math_score: Optional[int] = None
+    is_official: Optional[bool] = None
     
 class PSAT(Test):
     # total_score: int
@@ -154,6 +159,7 @@ class ACTUpdate(BaseModel):
     math_score: Optional[int] = None
     reading_score: Optional[int] = None
     science_score: Optional[int] = None
+    is_official: Optional[bool] = None
     
 class ACT(Test):
     # total_score: int

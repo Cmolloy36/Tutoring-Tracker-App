@@ -7,11 +7,15 @@
 - [ ] build basic authentication
 - [x] integrate with dash/plotly, streamlit, or gradio for analytics
 - [x] Dockerize for consistent startup and utility
-- [ ] Build frontend forms
-- [ ] Set up script to populate fake data
+- [ ] *Build frontend forms*
+- [X] Set up script to populate fake data
 - [ ] Flesh out analytics capabilities
-- [ ] Dockerize the streamlit app
+- [X] Dockerize the streamlit app
 - [ ] Adjust users endpoints so that it can handle different types of responses
+- [ ] Sort tests by date
+- [ ] Build in chart to average student data
+- [ ] Graceful error handling for no users, no tests for a user
+- [ ] Analysis for number of tutoring sessions
 
 ## Testing
 

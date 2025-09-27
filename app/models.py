@@ -69,9 +69,11 @@ class Test(Base):
     updated_at: Mapped[datetime] = mapped_column(sa.TIMESTAMP, default=sa.func.now())
     test_type: Mapped[str] = mapped_column(nullable=False)
     test_notes: Mapped[str] = mapped_column(nullable=False)
+    total_score: Mapped[int] = mapped_column(nullable=False)
     student_id: Mapped[int] = mapped_column(sa.ForeignKey("students.id"))
     student: Mapped["Student"] = relationship(back_populates="tests")
     tutoring_sessions: Mapped[list["TutoringSession"]] = relationship(back_populates="test")
+    is_official: Mapped[bool] = mapped_column(default=False,nullable=True)
 
     __mapper_args__ = {
         "polymorphic_identity": "test",

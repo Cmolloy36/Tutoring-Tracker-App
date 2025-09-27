@@ -66,14 +66,14 @@ def get_tests(
 
 @router.put("/tests/{test_id}", response_model=schemas.TestResponse)
 def update_test(test_id: int, test: schemas.TestUpdate, session: Session = Depends(get_session)):
-    student, err = crud_tests.update_test(session=session, test_id=test_id, test=test)
+    student, err = crud_tests.update_test(session=session, test_id=test_id, test_data=test)
     if err is not None:
         raise HTTPException(status_code=404, detail=f"error: {err}")
     return student
 
 @router.delete("/tests/{test_id}", response_model=str)
 def delete_test(test_id: int, session: Session = Depends(get_session)):
-    test_id, err = crud_tests.delete_test(session=session, test_id=test_id)
+    conf, err = crud_tests.delete_test(session=session, test_id=test_id)
     if err is not None:
         raise HTTPException(status_code=404, detail=f"error: {err}")
     return f"Test ID: {test_id} has been deleted"
